@@ -14,6 +14,7 @@
  * HTML; window is only touched inside an effect).
  */
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
@@ -68,9 +69,18 @@ export function MenuNav({
         <div className="relative mx-auto flex h-16 max-w-[1680px] items-center justify-between px-5 md:h-20 md:px-8">
           <Link
             href="/"
-            className="font-logo text-[1.35rem] font-semibold tracking-[-0.03em] text-ink"
+            aria-label="Loopsoop — home"
+            className="inline-flex items-center"
           >
-            Loopsoop
+            <Image
+              src="/loopmark.png"
+              alt="Loopsoop"
+              width={400}
+              height={297}
+              priority
+              unoptimized
+              className="h-8 w-auto md:h-9"
+            />
           </Link>
 
           {/* Centered tubelight pill nav — desktop. */}

@@ -7,6 +7,7 @@
  * the particle wordmark is a client island.
  */
 
+import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { ParticleText } from "@/components/ui/ParticleText";
@@ -87,9 +88,14 @@ export function FooterNew({
         {/* Columns. */}
         <div className="grid gap-12 md:grid-cols-12 md:gap-8">
           <div className="md:col-span-4">
-            <span className="font-logo text-[1.6rem] font-semibold tracking-[-0.03em] text-ink">
-              Loopsoop
-            </span>
+            <Image
+              src="/loopmark.png"
+              alt="Loopsoop"
+              width={400}
+              height={297}
+              unoptimized
+              className="h-10 w-auto"
+            />
             <p className="mt-5 max-w-xs text-sm leading-relaxed text-muted">
               {STUDIO_BLURB}
             </p>
