@@ -1,0 +1,17 @@
+/* ScrollReel — a wide repeating film-strip translated horizontally on scroll. */
+.strip {
+  height: 116px;
+  /* Wider than the viewport so there is room to drift. */
+  width: 180%;
+  background-repeat: repeat-x;
+  background-position: 0 center;
+  background-size: 148px 116px;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .strip {
+    transform: none !important;
+    width: 100%;
+  }
+}

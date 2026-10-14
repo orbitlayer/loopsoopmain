@@ -1,0 +1,46 @@
+/*
+ * OrbitRings keyframes. Each orbit group rotates about the viewBox centre.
+ * transform-box: view-box makes transform-origin resolve against the SVG
+ * viewBox, so "50% 50%" is the true centre (200,200) regardless of the group's
+ * own bbox. Reduced motion freezes every orbit into its composed rest frame.
+ */
+
+.root {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.spin,
+.spinRev,
+.spinSlow {
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+}
+
+.spin {
+  animation: orbit 22s linear infinite;
+}
+
+.spinRev {
+  animation: orbit 30s linear infinite reverse;
+}
+
+.spinSlow {
+  animation: orbit 44s linear infinite;
+}
+
+@keyframes orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin,
+  .spinRev,
+  .spinSlow {
+    animation: none;
+  }
+}

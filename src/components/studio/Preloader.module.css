@@ -1,0 +1,76 @@
+/*
+ * Preloader keyframes & transitions. Entrance (introUp) staggers the wordmark,
+ * eyebrow and counter in; the panel exit is a transform slide (not a keyframe)
+ * so its transitionend can drive unmount. Kept out of globals.css so parallel
+ * work never collides. Reduced-motion users never mount the Preloader, but the
+ * guards below keep it inert if the classes are ever reused.
+ */
+
+.root {
+  background: #f6f6f4;
+}
+
+.panel {
+  position: absolute;
+  inset: 0;
+  background: #f6f6f4;
+  transform: translateY(0);
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.panelExit {
+  transform: translateY(-101%);
+}
+
+.content {
+  transition:
+    opacity 0.5s ease,
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.contentExit {
+  opacity: 0;
+  transform: translateY(-24px);
+}
+
+.enter {
+  animation: introUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes introUp {
+  from {
+    opacity: 0;
+    transform: translateY(26px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lineTrack {
+  position: relative;
+  width: 100%;
+  height: 1px;
+  background: rgba(17, 17, 17, 0.12);
+  overflow: hidden;
+}
+
+.lineFill {
+  position: absolute;
+  inset: 0;
+  background: #111111;
+  transform-origin: left center;
+  transform: scaleX(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .content {
+    transition: none;
+  }
+  .enter {
+    animation: none;
+  }
+}

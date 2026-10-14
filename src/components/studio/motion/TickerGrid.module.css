@@ -1,0 +1,61 @@
+/*
+ * TickerGrid styling. Two stacked fields of "+" marks (set as repeating CSS
+ * backgrounds in the component). The .sweep copy is brighter but masked by an
+ * oversized diagonal gradient band whose position animates corner-to-corner,
+ * so only a moving diagonal stripe of marks lights up. Reduced motion hides the
+ * sweep and leaves the static base field.
+ */
+
+.root {
+  /* absolute inset-0 / overflow-hidden / pointer-events-none come from the
+     component's className so the motif fills any positioned parent without
+     introducing page scroll. isolate keeps the masked sweep layer composited
+     against the base field only. */
+  isolation: isolate;
+}
+
+.field {
+  position: absolute;
+  inset: 0;
+  background-repeat: repeat;
+  background-position: center;
+}
+
+.sweep {
+  -webkit-mask-image: linear-gradient(
+    115deg,
+    transparent 35%,
+    #000 50%,
+    transparent 65%
+  );
+  mask-image: linear-gradient(
+    115deg,
+    transparent 35%,
+    #000 50%,
+    transparent 65%
+  );
+  -webkit-mask-size: 250% 250%;
+  mask-size: 250% 250%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  animation: tg-sweep 9s linear infinite;
+  will-change: mask-position;
+}
+
+@keyframes tg-sweep {
+  from {
+    -webkit-mask-position: 120% 120%;
+    mask-position: 120% 120%;
+  }
+  to {
+    -webkit-mask-position: -20% -20%;
+    mask-position: -20% -20%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sweep {
+    animation: none;
+    display: none;
+  }
+}

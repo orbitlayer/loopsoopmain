@@ -1,0 +1,78 @@
+/*
+ * Orbiting glints for StarBorder. Two large, soft radial-gradient blobs sit just
+ * off the top and bottom edges of the pill and slide horizontally in opposite
+ * directions, so a light appears to travel around the border. The pill clips
+ * them (overflow: hidden) to its rounded shape; the inner content (z-index 1)
+ * covers the centre, leaving only the thin padding band lit. Colours arrive as
+ * --sb-glint / --sb-ring and the loop length as --sb-speed.
+ */
+
+.container {
+  display: inline-block;
+  position: relative;
+  padding: 1.5px;
+  border-radius: 999px;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.glint {
+  position: absolute;
+  z-index: 0;
+  width: 300%;
+  height: 50%;
+  border-radius: 50%;
+  opacity: 0.85;
+  pointer-events: none;
+  background: radial-gradient(circle, var(--sb-glint, #111), transparent 10%);
+}
+
+.bottom {
+  bottom: -11px;
+  right: -250%;
+  animation: sb-bottom var(--sb-speed, 6s) linear infinite alternate;
+}
+
+.top {
+  top: -11px;
+  left: -250%;
+  animation: sb-top var(--sb-speed, 6s) linear infinite alternate;
+}
+
+@keyframes sb-bottom {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes sb-top {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Full hairline ring so there is always a visible border, including at rest and
+ * under reduced motion. Box-shadow (not border) because globals.css forces every
+ * border-color to --line. */
+.inner {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px var(--sb-ring, rgba(17, 17, 17, 0.14));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glint {
+    animation: none;
+    opacity: 0;
+  }
+}

@@ -1,0 +1,193 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ */
+/*  LOOPSOOP — ultra-minimal black & white editorial design system     */
+/* ------------------------------------------------------------------ */
+
+:root {
+  color-scheme: light;
+
+  /* Light surfaces */
+  --bg: #f6f6f4; /* warm off-white page */
+  --surface: #ffffff; /* elevated cards */
+  --subtle: #f0f0ee; /* subtle panels / CTA bands */
+
+  /* Ink */
+  --ink: #111111; /* primary text */
+  --muted: #6b6b6b; /* supporting text */
+  --faint: #8a8a85; /* muted headline lines — AA-safe for large display text */
+  --line: #eaeaea; /* hairline borders */
+
+  /* Dark sections */
+  --dark: #0e0e0e;
+  --dark-surface: #161616;
+  --dark-elevated: #1d1d1d;
+  --dark-muted: #9a9a9a;
+  --dark-faint: #6d6d6d;
+  --dark-line: rgba(255, 255, 255, 0.1);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-subtle: var(--subtle);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-line: var(--line);
+  --color-dark: var(--dark);
+  --color-dark-surface: var(--dark-surface);
+  --color-dark-elevated: var(--dark-elevated);
+  --color-dark-muted: var(--dark-muted);
+  --color-dark-faint: var(--dark-faint);
+  --color-dark-line: var(--dark-line);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-inter-tight), var(--font-inter), ui-sans-serif,
+    system-ui, sans-serif;
+  --font-logo: var(--font-space-grotesk), var(--font-inter-tight),
+    ui-sans-serif, system-ui, sans-serif;
+
+  --radius-card: 24px;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+  border-color: var(--line);
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv01", "cv11";
+  overflow-x: hidden;
+}
+
+/* Display type — large editorial headings */
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+}
+
+.eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+/* Selection */
+::selection {
+  background: var(--ink);
+  color: #fff;
+}
+.on-dark ::selection {
+  background: #fff;
+  color: var(--ink);
+}
+
+/* Accessible focus ring */
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.on-dark :focus-visible {
+  outline-color: #fff;
+}
+
+/* Hide scrollbar utility (for filter rows / marquees) */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Marquee (logo strips)                                              */
+/* ------------------------------------------------------------------ */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.animate-marquee {
+  animation: marquee 38s linear infinite;
+  will-change: transform;
+}
+.marquee-pause:hover .animate-marquee {
+  animation-play-state: paused;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Above-the-fold reveal (CSS-only, SSR-visible — used by <Reveal    */
+/*  immediate>). Element paints at full opacity in the server HTML and */
+/*  fades in via animation; the reduced-motion block below makes it    */
+/*  instant. This keeps the LCP hero out of client-JS gating.          */
+/* ------------------------------------------------------------------ */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.reveal-up {
+  animation: reveal-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Media placeholder (self-contained, swap for real images later)     */
+/* ------------------------------------------------------------------ */
+.media {
+  position: relative;
+  overflow: hidden;
+  background-color: #171717;
+  background-image:
+    radial-gradient(120% 120% at 15% 10%, #2a2a2a 0%, transparent 55%),
+    radial-gradient(120% 120% at 85% 90%, #202020 0%, transparent 50%),
+    linear-gradient(135deg, #1a1a1a 0%, #0c0c0c 100%);
+}
+.media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.5;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Reduced motion                                                     */
+/* ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-marquee {
+    animation: none !important;
+  }
+}

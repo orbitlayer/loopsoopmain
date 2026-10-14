@@ -1,0 +1,40 @@
+/*
+ * PathDraw styling. The root scales to its width keeping the path's aspect and
+ * lets round caps spill past the viewBox (overflow: visible). The glint is a
+ * short normalised dash (pathLength is 1) whose dashoffset loops, sliding a
+ * bright segment along the line. Reduced motion neutralises both the draw
+ * transition and the glint so the line simply shows, fully drawn.
+ */
+
+.root {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.glint {
+  stroke-dasharray: 0.08 0.92;
+  animation: glint-travel 3.6s linear infinite;
+}
+
+@keyframes glint-travel {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .line {
+    transition: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+
+  .glint {
+    animation: none;
+    display: none;
+  }
+}

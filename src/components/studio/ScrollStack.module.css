@@ -1,0 +1,68 @@
+/*
+ * ScrollStack — a scroll-driven stacking-cards pile on light.
+ *
+ * Pinning is pure CSS `position: sticky`: each card sticks a little lower than
+ * the one before it (top = base + index * step) so the pinned cards fan into a
+ * tidy pile with each card's top edge peeking above the next. The subtle
+ * "recede as covered" scale + opacity is written per-frame from JS (see the
+ * .tsx) via a single rAF; the resting state here (scale 1, full opacity, soft
+ * shadow) is the final readable frame, so server HTML / no-JS render a complete,
+ * legible pile with no hydration work.
+ *
+ * Reduced motion OR no `position: sticky` support → the cards drop to a plain,
+ * static vertical stack (no pin, no scale), fully readable. Borders use the
+ * light `--line` via Tailwind `border border-line` in the .tsx; shadows here.
+ * Kept out of globals.css so parallel work never collides.
+ */
+
+.stack {
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.card {
+  position: sticky;
+  /* base ≈ 12vh; each later card pins `step` lower for the peeking pile edge.
+     JS overwrites --stack-top / --stack-step with resolved px after mount so
+     the scale timing stays in sync; these are the SSR / no-JS defaults. */
+  top: calc(var(--stack-top, 12vh) + var(--i, 0) * var(--stack-step, 12px));
+  margin-bottom: clamp(2rem, 6vh, 4rem);
+  transform-origin: center top;
+  will-change: transform, opacity;
+  box-shadow: 0 30px 80px -42px rgba(17, 17, 17, 0.26);
+  transition: box-shadow 0.6s var(--ease);
+}
+
+.card:last-child {
+  margin-bottom: 0;
+}
+
+/* Big index watermark — tabular so 01/02… share a width. */
+.index {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* --------------------------------------------------------- graceful fallback */
+/* No sticky support: never pin, never scale — a plain readable column. */
+@supports not (position: sticky) {
+  .card {
+    position: static;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* Reduced motion: no pin, no scroll-linked scale — a plain readable column.
+   The .tsx also leaves the rAF unmounted, so no inline transform is written. */
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    position: static;
+    transform: none !important;
+    opacity: 1 !important;
+    transition: none;
+  }
+}

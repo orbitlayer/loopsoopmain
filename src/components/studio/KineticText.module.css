@@ -1,0 +1,65 @@
+/*
+ * KineticText — masked scroll-reveal headings. Each unit (word or line) sits in
+ * an overflow-hidden mask; its inner slides translateY(110% → 0) with a slight
+ * fade when the component first enters view. The server/default state is the
+ * RESTING (visible, final) frame — so SSR HTML, no-JS and reduced-motion all
+ * show readable text. JS "arms" the hidden start state in a layout effect
+ * (before paint) and the IntersectionObserver reveals it. Site easing throughout.
+ * Kept out of globals.css so parallel work never collides.
+ */
+
+.root {
+  display: block;
+}
+
+/* Mask — clips the sliding inner. Slight vertical padding (compensated by a
+   negative margin) keeps ascenders/descenders from being shaved at rest. */
+.mask {
+  overflow: hidden;
+  padding-block: 0.1em;
+  margin-block: -0.1em;
+}
+
+/* Words: inline masks that wrap on the spaces rendered between them. */
+.words .mask {
+  display: inline-block;
+  vertical-align: top;
+}
+
+/* Lines: block masks stacked vertically. */
+.lines .mask {
+  display: block;
+}
+
+.unit {
+  display: inline-block;
+  transform: translateY(0);
+  opacity: 1;
+  will-change: transform, opacity;
+}
+
+/* Armed (JS on + motion allowed): start each unit hidden below its mask. No
+   transition here, so arming is instant — the reveal below provides the motion. */
+.root[data-armed="true"] .unit {
+  transform: translateY(110%);
+  opacity: 0;
+}
+
+/* Revealed: slide to rest with site easing + fade. transition-delay (the
+   stagger) is set inline per unit. */
+.root[data-armed="true"][data-revealed="true"] .unit {
+  transform: translateY(0);
+  opacity: 1;
+  transition:
+    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Safety net: if anything armed under reduced-motion, force the final frame. */
+@media (prefers-reduced-motion: reduce) {
+  .root .unit {
+    transform: none !important;
+    opacity: 1 !important;
+    transition: none !important;
+  }
+}

@@ -1,0 +1,68 @@
+/*
+ * SkeletonLoader — overlay exit transition + the block shimmer keyframes. Kept
+ * out of globals.css so parallel work never collides. The overlay's resting
+ * state is fully visible; the exit is a transform + opacity transition (not a
+ * keyframe) so its transitionend can drive unmount. Reduced-motion users never
+ * mount the overlay, but the guard below keeps everything inert if reused.
+ */
+
+.root {
+  background: #f6f6f4;
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.rootExit {
+  opacity: 0;
+  transform: translateY(-24px);
+  pointer-events: none;
+}
+
+/* Grey placeholder block with a diagonal light sweep. */
+.block {
+  position: relative;
+  overflow: hidden;
+  background: #e9e9e6;
+}
+
+/* Alternate, slightly lighter tone. */
+.shade {
+  background: #ededea;
+}
+
+.block::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-125%);
+  background: linear-gradient(
+    105deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0) 38%,
+    rgba(255, 255, 255, 0.62) 50%,
+    rgba(255, 255, 255, 0) 62%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: skeletonShimmer 1.25s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: transform;
+}
+
+@keyframes skeletonShimmer {
+  to {
+    transform: translateX(125%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root {
+    transition: none;
+  }
+  .block::after {
+    display: none;
+    animation: none;
+  }
+}

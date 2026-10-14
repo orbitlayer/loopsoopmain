@@ -1,0 +1,168 @@
+/*
+ * Fan geometry, motion, grain and crop marks for HeroCards.
+ *
+ * The back prints rotate about one shared pivot well below the stack, so a
+ * single angle sets both their spread and their drop. Each back print is two
+ * layers on that pivot: .slot carries the resting tilt and the entrance, .fan
+ * adds the hover tilt. Rotations about the same pivot simply add, and the
+ * entrance never blocks the hover. The front print is split the same way
+ * (.front entrance, .lift hover), and its hover shadow is a pre-rendered layer
+ * that fades in, so hover only animates transform and opacity.
+ *
+ * Keyframes omit their `to` frame, so each animation ends on the element's own
+ * resting styles; `backwards` fill only holds the start frame during the delay.
+ */
+
+.stage {
+  --fan: 10deg; /* resting tilt of the back prints */
+  --open: 12.5deg; /* tilt on hover */
+  --pivot: 50% 215%;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.left {
+  --dir: -1;
+  --delay: 0.5s;
+}
+.right {
+  --dir: 1;
+  --delay: 0.6s;
+}
+
+.slot,
+.fan,
+.front,
+.lift {
+  position: absolute;
+  inset: 0;
+}
+
+.slot,
+.fan {
+  transform-origin: var(--pivot);
+}
+
+.slot {
+  rotate: calc(var(--dir) * var(--fan));
+  animation: deal 1.25s var(--ease) var(--delay) backwards;
+}
+
+.fan {
+  transition: rotate 0.7s var(--ease);
+}
+
+.front {
+  animation: rise 0.9s var(--ease) 0.15s backwards;
+}
+
+.lift {
+  transition: translate 0.7s var(--ease);
+}
+
+.lifted {
+  opacity: 0;
+  transition: opacity 0.7s var(--ease);
+}
+
+.floor {
+  animation: settle 1.4s var(--ease) 0.4s backwards;
+}
+
+@media (hover: hover) {
+  .stage:hover .fan {
+    rotate: calc(var(--dir) * (var(--open) - var(--fan)));
+  }
+  .stage:hover .lift {
+    translate: 0 -2.5%;
+  }
+  .stage:hover .lifted {
+    opacity: 1;
+  }
+}
+
+/* The back prints start squared up behind the front one, then deal out. */
+@keyframes deal {
+  from {
+    rotate: 0deg;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+}
+
+@keyframes rise {
+  from {
+    translate: 0 7%;
+    opacity: 0;
+  }
+  45% {
+    opacity: 1;
+  }
+}
+
+@keyframes settle {
+  from {
+    opacity: 0;
+    scale: 0.6 1;
+  }
+}
+
+/* Fine grain on the printed area, the same recipe as the site's .media
+   placeholder, so it adds texture without shifting tone. */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.7;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/*
+ * Proof-sheet crop marks: eight hairline ticks in the margin, each in line
+ * with an edge of the image and stopped short of its corner. Drawn as
+ * background layers on one element, using the image's own margins (--m top
+ * and sides, --f foot), so they track it at every size.
+ */
+.marks {
+  --m: 7cqw;
+  --f: 15cqw;
+  --g: 1.6cqw; /* gap between a tick and the image corner */
+  --l: max(3.4cqw, 6px); /* tick length, kept legible on phones */
+  --c: rgba(17, 17, 17, 0.26);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--c), var(--c)), linear-gradient(var(--c), var(--c)),
+    linear-gradient(var(--c), var(--c)), linear-gradient(var(--c), var(--c)),
+    linear-gradient(var(--c), var(--c)), linear-gradient(var(--c), var(--c)),
+    linear-gradient(var(--c), var(--c)), linear-gradient(var(--c), var(--c));
+  background-repeat: no-repeat;
+  background-size:
+    var(--l) 1px, var(--l) 1px, var(--l) 1px, var(--l) 1px,
+    1px var(--l), 1px var(--l), 1px var(--l), 1px var(--l);
+  background-position:
+    /* horizontal ticks, in line with the top and bottom image edges */
+    left calc(var(--m) - var(--g) - var(--l)) top var(--m),
+    right calc(var(--m) - var(--g) - var(--l)) top var(--m),
+    left calc(var(--m) - var(--g) - var(--l)) bottom var(--f),
+    right calc(var(--m) - var(--g) - var(--l)) bottom var(--f),
+    /* vertical ticks, in line with the left and right image edges */
+    left var(--m) top calc(var(--m) - var(--g) - var(--l)),
+    right var(--m) top calc(var(--m) - var(--g) - var(--l)),
+    left var(--m) bottom calc(var(--f) - var(--g) - var(--l)),
+    right var(--m) bottom calc(var(--f) - var(--g) - var(--l));
+}
+
+/* globals.css only shortens durations; drop the delays too so the resting
+   fan is what paints first. */
+@media (prefers-reduced-motion: reduce) {
+  .slot,
+  .front,
+  .floor {
+    animation: none;
+  }
+}

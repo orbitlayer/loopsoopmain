@@ -1,0 +1,88 @@
+/*
+ * MenuNav — keyframes and component-scoped motion for the dark studio nav.
+ * All pointer-driven motion lives here so it can be switched off cleanly under
+ * prefers-reduced-motion without touching the global stylesheet. The fullscreen
+ * overlay's slide/stagger reveals are driven by framer-motion in the TSX; this
+ * file carries the ambient glow, the inline-link underline and the menu icon.
+ */
+
+/* Inline desktop nav links — underline wipes in from the left on hover/focus. */
+.navLink {
+  position: relative;
+}
+.navLink::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  height: 1px;
+  width: 100%;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.navLink:hover::after,
+.navLink:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* "Let's talk" pill — subtle lift on hover. */
+.pill {
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.pill:hover,
+.pill:focus-visible {
+  transform: translateY(-2px);
+}
+
+/* Menu trigger — the top bar retracts on hover for a small kinetic cue. */
+.bar {
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.trigger:hover .barTop,
+.trigger:focus-visible .barTop {
+  width: 60%;
+}
+
+/* Ambient white glow drifting behind the overlay type. */
+@keyframes menuGlowDrift {
+  0% {
+    transform: translate3d(-8%, -6%, 0) scale(1);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translate3d(8%, 6%, 0) scale(1.18);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate3d(-8%, -6%, 0) scale(1);
+    opacity: 0.45;
+  }
+}
+.glow {
+  animation: menuGlowDrift 16s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navLink::after {
+    transition: none;
+  }
+  .pill,
+  .pill:hover,
+  .pill:focus-visible {
+    transition: none;
+    transform: none;
+  }
+  .bar {
+    transition: none;
+  }
+  .trigger:hover .barTop,
+  .trigger:focus-visible .barTop {
+    width: 100%;
+  }
+  .glow {
+    animation: none;
+  }
+}

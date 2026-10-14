@@ -1,0 +1,33 @@
+/*
+ * LoopMark keyframes. With pathLength normalised to 100, a single 22-unit lit
+ * segment (dash 22 / gap 78) travels the whole loop once per cycle by animating
+ * stroke-dashoffset to -100 — a seamless flow. prefers-reduced-motion clears
+ * the dash so the loop is drawn solid and still.
+ */
+
+.root {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.flow {
+  stroke-dasharray: 22 78;
+  stroke-dashoffset: 0;
+  filter: drop-shadow(0 0 3px rgba(17, 17, 17, 0.25));
+  animation: loopFlow 3s linear infinite;
+}
+
+@keyframes loopFlow {
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flow {
+    stroke-dasharray: none;
+    filter: none;
+    animation: none;
+  }
+}

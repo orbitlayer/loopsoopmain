@@ -1,0 +1,57 @@
+/*
+ * Marquee — a big seamless horizontal text band. The track holds two identical,
+ * back-to-back groups (no gap between them) so the band loops continuously: the
+ * rAF driver translates the track by a constant px/sec and wraps by exactly one
+ * group width. The big font + separator spacing live here; some items render as
+ * ink outline via -webkit-text-stroke for variety (monochrome only). The band
+ * is overflow-hidden so the max-content track never causes page overflow.
+ * Reduced motion / no-JS leave it static and readable. Out of globals.css so
+ * parallel work never collides.
+ */
+
+.band {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.track {
+  display: flex;
+  flex-wrap: nowrap;
+  width: max-content;
+  will-change: transform;
+}
+
+/* One repeat unit. flex:none so it keeps its intrinsic width; its box width
+   (including the trailing separator's margin) is the seamless loop distance. */
+.group {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  white-space: nowrap;
+}
+
+.item {
+  white-space: nowrap;
+}
+
+/* Outline variant — transparent fill, ink stroke. Falls back to a faint fill
+   where -webkit-text-stroke is unsupported so the text never disappears. */
+.outline {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(17, 17, 17, 0.55);
+}
+
+@supports not ((-webkit-text-stroke: 1px black)) {
+  .outline {
+    color: rgba(17, 17, 17, 0.5);
+  }
+}
+
+.sep {
+  flex: none;
+  margin-inline: 0.4em;
+  font-size: 0.7em;
+  line-height: 1;
+  color: rgba(17, 17, 17, 0.3);
+}

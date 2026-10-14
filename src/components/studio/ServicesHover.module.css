@@ -1,0 +1,265 @@
+/*
+ * ServicesHover — agency-style services list (light, monochrome). Rows are real
+ * links; a hairline divider separates them (box-shadow, since globals' unlayered
+ * `* { border-color }` overrides Tailwind border utilities — we never rely on
+ * those here). On hover/focus the active row keeps full brightness while the
+ * others dim, the description expands, and a hairline "sweep" draws under the
+ * row. All dim/reveal is driven by CSS :has()/:hover/:focus-within so it works
+ * with NO JS and in SSR HTML (descriptions are always in the DOM). On touch /
+ * no-hover devices descriptions stay open and nothing dims. The floating cursor
+ * panel is a JS-only desktop enhancement. Reduced motion forces the final,
+ * static, fully-readable frame. Kept out of globals.css so parallel work never
+ * collides.
+ */
+
+.section {
+  position: relative;
+}
+
+.list {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Row: a hairline on top (box-shadow — border-color is globally overridden). */
+.row {
+  position: relative;
+  box-shadow: inset 0 1px 0 rgba(17, 17, 17, 0.08);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.row:last-child {
+  box-shadow:
+    inset 0 1px 0 rgba(17, 17, 17, 0.08),
+    inset 0 -1px 0 rgba(17, 17, 17, 0.08);
+}
+
+.link {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: clamp(1rem, 3vw, 2.75rem);
+  padding-block: clamp(1.1rem, 3.2vw, 2rem);
+  outline: none;
+  text-decoration: none;
+  color: inherit;
+}
+
+.index {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+  color: rgba(17, 17, 17, 0.4);
+  transition: color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.name {
+  color: #111111;
+  transform: translateX(0);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.arrow {
+  align-self: center;
+  color: rgba(17, 17, 17, 0.4);
+  opacity: 0;
+  transform: translate(-6px, 2px);
+  transition:
+    opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Description: always visible by default (mobile / no-hover / no-JS). */
+.desc {
+  grid-column: 2 / -1;
+  max-width: 48ch;
+  margin-top: 0.4rem;
+  color: #6b6b6b;
+}
+
+/* Hairline sweep drawn under the row on hover/focus (desktop, motion). */
+.sweep {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: #111111;
+  transform: scaleX(0);
+  transform-origin: left center;
+  opacity: 0.85;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+/* ---- Hover / focus behaviour: only on real hover-capable, fine pointers ---- */
+@media (hover: hover) and (pointer: fine) {
+  .desc {
+    max-height: 0;
+    margin-top: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(4px);
+    transition:
+      max-height 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+      margin-top 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Dim the non-active rows while any row is hovered or focused. */
+  .list:has(.link:hover) .row:not(:hover),
+  .list:has(.link:focus-visible) .row:not(:focus-within) {
+    opacity: 0.3;
+  }
+
+  .row:hover .name,
+  .row:focus-within .name {
+    transform: translateX(clamp(0.5rem, 1.2vw, 1.25rem));
+  }
+
+  .row:hover .index,
+  .row:focus-within .index {
+    color: #111111;
+  }
+
+  .row:hover .arrow,
+  .row:focus-within .arrow {
+    opacity: 1;
+    transform: translate(0, 2px);
+    color: #111111;
+  }
+
+  .row:hover .desc,
+  .row:focus-within .desc {
+    max-height: 7rem;
+    margin-top: 0.75rem;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .row:hover .sweep,
+  .row:focus-within .sweep {
+    transform: scaleX(1);
+  }
+}
+
+/* ---- Floating cursor preview panel (JS + desktop + motion only) ---- */
+.panel {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 40;
+  width: 210px;
+  height: 252px;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow:
+    0 0 0 1px #eaeaea,
+    0 30px 80px -30px rgba(17, 17, 17, 0.25);
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate3d(-9999px, -9999px, 0) scale(0.9);
+  transition:
+    opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+.panel[data-open="true"] {
+  opacity: 1;
+}
+
+.panelGrad {
+  position: absolute;
+  inset: -40%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(17, 17, 17, 0.08),
+    rgba(17, 17, 17, 0) 35%,
+    rgba(17, 17, 17, 0.05) 60%,
+    rgba(17, 17, 17, 0) 85%
+  );
+  animation: panelSpin 14s linear infinite;
+}
+
+.panelGrain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.045;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.panelInner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 18px;
+}
+
+.panelNum {
+  font-variant-numeric: tabular-nums;
+  font-size: 5.5rem;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  color: #111111;
+}
+
+.panelName {
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+  color: rgba(17, 17, 17, 0.6);
+}
+
+.panelTag {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: #8a8a85;
+}
+
+@keyframes panelSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---- Reduced motion: final, static, fully readable frame ---- */
+@media (prefers-reduced-motion: reduce) {
+  .row,
+  .name,
+  .index,
+  .arrow,
+  .desc,
+  .sweep,
+  .panel {
+    transition: none !important;
+  }
+  .row {
+    opacity: 1 !important;
+  }
+  .name {
+    transform: none !important;
+  }
+  .arrow {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .desc {
+    max-height: none !important;
+    margin-top: 0.75rem !important;
+    opacity: 1 !important;
+    transform: none !important;
+    overflow: visible !important;
+  }
+  .sweep {
+    display: none;
+  }
+  .panelGrad {
+    animation: none;
+  }
+}

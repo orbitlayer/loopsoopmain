@@ -1,0 +1,62 @@
+/*
+ * FilmReel keyframes. The strip translates by exactly one tile width (--tw) so
+ * the spare tile makes the loop seamless; the playhead sweeps the full viewBox
+ * width (--vbw) and the play glyph pulses in opacity. prefers-reduced-motion
+ * stops every animation, leaving a single composed frame.
+ */
+
+.root {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.strip {
+  animation: filmScroll 7s linear infinite;
+}
+
+/* resting position (also the reduced-motion frame): a quarter of the way in */
+.playhead {
+  transform: translateX(120px);
+  animation: playSweep 5.5s linear infinite;
+}
+
+.pulse {
+  animation: playPulse 2.6s ease-in-out infinite;
+}
+
+@keyframes filmScroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-1 * var(--tw, 120px)));
+  }
+}
+
+@keyframes playSweep {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(var(--vbw, 480px));
+  }
+}
+
+@keyframes playPulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .strip,
+  .playhead,
+  .pulse {
+    animation: none;
+  }
+}

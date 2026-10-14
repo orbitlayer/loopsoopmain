@@ -1,0 +1,162 @@
+/*
+ * GradientCarousel — motion + card styling for the auto-scrolling, infinitely
+ * looping project carousel on light (a "gradient carousel"). The card look is a
+ * 1:1 copy of WorkShowcase's dark video tiles (cover filter, graphite
+ * placeholder, bottom scrim, play glyph, "View" underline wipe) so the two read
+ * as one system. Every RESTING style is the final, readable state, so the SSR /
+ * no-JS / reduced-motion fallback (a native horizontal scroll row) renders
+ * complete content; hover zoom/lift and the underline wipe only apply under
+ * prefers-reduced-motion:no-preference. The continuous leftward track transform
+ * is driven per-frame from JS (see the .tsx); its base state (translateX 0) is a
+ * valid flush-left start so it degrades gracefully. Kept out of globals.css so
+ * parallel work never collides, and uses ring/shadow (never `border`) to dodge
+ * the global border-color override.
+ */
+
+.root {
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --fade: clamp(24px, 8vw, 140px);
+}
+
+/* Clipped viewport. In auto mode it hides the overflowing track; in the
+   fallback it scrolls natively. The symmetric mask fades both edges to the page
+   background (transparent → opaque → opaque → transparent). Masking only affects
+   painting, not hit-testing, so edge cards stay fully clickable. */
+.viewport {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--fade),
+    #000 calc(100% - var(--fade)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--fade),
+    #000 calc(100% - var(--fade)),
+    transparent 100%
+  );
+}
+
+/* Auto mode only: drag affordance + let vertical page scroll pass through while
+   we own horizontal swipes. */
+.autoViewport {
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+}
+.grabbing {
+  cursor: grabbing;
+}
+
+/* Horizontal track — transform is written per-frame from JS in auto mode. */
+.track {
+  will-change: transform;
+}
+
+/* One repeat unit (a full copy of the list). Its box width — including the
+   trailing margin of its last card — is the seamless loop distance. */
+.group {
+  display: flex;
+  flex: none;
+}
+
+/* ---- Card (mirrors WorkShowcase exactly) --------------------------------- */
+
+.card {
+  transition:
+    box-shadow 0.5s var(--ease),
+    transform 0.6s var(--ease);
+}
+
+/* Cover image: strict monochrome, gently darkened at rest. */
+.cover {
+  filter: grayscale(1) contrast(1.03) brightness(0.82);
+  transform: scale(1);
+  transition:
+    transform 0.9s var(--ease),
+    filter 0.6s var(--ease);
+}
+
+/* Dark graphite placeholder for a card with no thumb — reads as a video tile. */
+.placeholder {
+  background:
+    radial-gradient(
+      120% 90% at 78% 12%,
+      rgba(255, 255, 255, 0.06) 0%,
+      rgba(255, 255, 255, 0) 55%
+    ),
+    linear-gradient(150deg, #1c1c1c 0%, #141414 45%, #0d0d0d 100%);
+}
+
+/* Bottom-weighted dark scrim so the white title / eyebrow stay legible over any
+   (grayscale) image or the graphite placeholder. */
+.scrim {
+  background: linear-gradient(
+    to top,
+    rgba(10, 10, 10, 0.88) 0%,
+    rgba(10, 10, 10, 0.55) 28%,
+    rgba(10, 10, 10, 0.12) 54%,
+    rgba(10, 10, 10, 0) 74%
+  );
+}
+
+/* Play glyph on media tiles. */
+.play {
+  background: rgba(255, 255, 255, 0.14);
+  transition:
+    transform 0.6s var(--ease),
+    background-color 0.4s var(--ease);
+}
+
+/* "View" affordance — label with a left-wiping underline + arrow nudge. */
+.view {
+  position: relative;
+}
+.viewLabel {
+  position: relative;
+}
+.viewLabel::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  height: 1px;
+  width: 100%;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.5s var(--ease);
+}
+.viewArrow {
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .card:hover,
+  .card:focus-visible {
+    transform: translateY(-6px);
+  }
+  .card:hover .cover,
+  .card:focus-visible .cover {
+    transform: scale(1.06);
+    filter: grayscale(1) contrast(1.05) brightness(1);
+  }
+  .card:hover .play,
+  .card:focus-visible .play {
+    transform: translate(-50%, -50%) scale(1.12);
+    background: rgba(255, 255, 255, 0.26);
+  }
+  .card:hover .viewLabel::after,
+  .card:focus-visible .viewLabel::after {
+    transform: scaleX(1);
+  }
+  .card:hover .viewArrow,
+  .card:focus-visible .viewArrow {
+    transform: translate(0.22em, -0.22em);
+  }
+  .viewArrow {
+    transition: transform 0.6s var(--ease);
+  }
+}

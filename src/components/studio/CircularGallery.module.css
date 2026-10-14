@@ -1,0 +1,41 @@
+/*
+ * CircularGallery — a curved, auto-scrolling image gallery (a 3D "circular
+ * gallery" in the spirit of reactbits.dev, rebuilt here with CSS 3D + rAF).
+ * Cards sit on a shallow cylinder: the centre card faces front while cards to
+ * the sides rotate away, recede and bow downward, so the row reads as an arc.
+ */
+
+.viewport {
+  perspective: 1300px;
+  perspective-origin: 50% 42%;
+}
+
+.track {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* The per-card wrapper that receives the live 3D curve transform each frame. */
+.item {
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+}
+
+.cover {
+  filter: grayscale(1) contrast(1.03);
+}
+
+.autoViewport {
+  cursor: grab;
+}
+.grabbing {
+  cursor: grabbing;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track,
+  .item {
+    will-change: auto;
+  }
+}

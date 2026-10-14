@@ -1,0 +1,41 @@
+/*
+ * Gradient fill + optional drift for GradientText. The gradient image is twice
+ * the text width so the position can shift within [0,-1 tile] while every glyph
+ * stays covered (never transparent). Colours arrive as --g1 / --g2 custom
+ * properties.
+ */
+
+.gradient {
+  display: inline-block;
+  background-image: linear-gradient(
+    90deg,
+    var(--g1, #111111),
+    var(--g2, #8a8a85),
+    var(--g1, #111111)
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.animate {
+  animation: drift 8s ease-in-out infinite;
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    background-position: 0% center;
+  }
+  50% {
+    background-position: 100% center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate {
+    animation: none;
+  }
+}

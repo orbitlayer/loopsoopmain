@@ -1,0 +1,17 @@
+# Keep the build context small and the image clean.
+node_modules
+.next
+.git
+.github
+.vercel
+.claude
+npm-debug.log*
+yarn-error.log*
+*.local
+.DS_Store
+coverage
+# Never bake secrets into the image — env is injected at `docker run` time.
+.env
+.env.*
+!.env.local.example
+deploy

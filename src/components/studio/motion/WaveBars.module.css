@@ -1,0 +1,34 @@
+/*
+ * WaveBars keyframes. Each bar scales about its own centre (transform-box:
+ * fill-box) between a per-bar trough (--lo) and peak (--hi) over a per-bar
+ * duration/delay. prefers-reduced-motion stops the animation so the inline
+ * static transform (a composed waveform) shows instead.
+ */
+
+.root {
+  display: block;
+  width: 100%;
+}
+
+.bar {
+  fill: rgba(17, 17, 17, 0.95);
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: eqPulse var(--dur, 1.2s) ease-in-out var(--delay, 0s) infinite;
+}
+
+@keyframes eqPulse {
+  0%,
+  100% {
+    transform: scaleY(var(--lo, 0.2));
+  }
+  50% {
+    transform: scaleY(var(--hi, 0.8));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    animation: none;
+  }
+}
