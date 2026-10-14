@@ -38,6 +38,12 @@ export async function query<T = Record<string, unknown>>(
   sql: string,
   params: SqlParam[] = [],
 ): Promise<T[]> {
+  // No database configured → run in the app's intended no-DB "demo" mode.
+  // Return an empty result instead of opening a pool to a non-existent MySQL:
+  // every fail-safe read then falls back to its built-in defaults, and we avoid
+  // an async mysql2 keep-alive `uncaughtException` (ECONNREFUSED) crashing the
+  // render. Set DB_HOST/DB_USER/DB_NAME to switch back to real queries.
+  if (!hasDbEnv()) return [] as T[];
   const [rows] = await getPool().execute(sql, params);
   return rows as T[];
 }
