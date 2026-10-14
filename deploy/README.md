@@ -40,20 +40,37 @@ git pull && ./deploy/vps-deploy.sh
   redeploys (so admin logins stay valid).
 - **Uploads:** persisted in the `loopsoop-uploads` Docker volume at
   `/data/uploads` (`UPLOADS_DIR`), surviving redeploys.
-- **Database:** none. With no `DB_*` env the site runs and the admin uses
-  browser (local) storage + the demo-login button. To attach MySQL later, add
-  to `~/.loopsoop.env`:
+- **Database:** optional. With no `DB_*` env the site runs and the admin uses
+  browser (local) storage + the demo-login button. To attach a real MySQL,
+  run a containerised one next to the app (rootless engine, shared
+  `loopsoop-net` network, persistent `loopsoop-db-data` volume):
 
-  ```
-  DB_HOST=...
-  DB_PORT=3306
-  DB_USER=...
-  DB_PASSWORD=...
-  DB_NAME=...
-  ```
+  1. Add the DB creds to `~/.loopsoop.env` (a strong `DB_PASSWORD` /
+     `MYSQL_ROOT_PASSWORD`, e.g. `openssl rand -hex 24`):
 
-  then run `./deploy/vps-deploy.sh` again. The admin automatically switches from
-  demo/browser storage to the database.
+     ```
+     DB_HOST=loopsoop-db
+     DB_PORT=3306
+     DB_NAME=loopsoop
+     DB_USER=loopsoop
+     DB_PASSWORD=...
+     MYSQL_ROOT_PASSWORD=...
+     ```
+
+  2. `./deploy/vps-db.sh` — starts the `loopsoop-db` MySQL container and loads
+     `mysql/*.sql` (schema + seed) once. Safe to re-run.
+  3. Seed an admin user (bcrypt hash — generate locally with
+     `node scripts/hash-password.mjs "<password>"`):
+
+     ```bash
+     docker exec -i loopsoop-db mysql -uroot -p"$MYSQL_ROOT_PASSWORD" loopsoop \
+       -e "INSERT INTO users (id,email,password_hash) VALUES (UUID(),'you@example.com','<hash>') \
+           ON DUPLICATE KEY UPDATE password_hash=VALUES(password_hash);"
+     ```
+
+  4. `./deploy/vps-deploy.sh` — the app joins `loopsoop-net`, connects to
+     `loopsoop-db`, and the admin switches from demo/browser storage to the
+     database automatically.
 
 ## Handy checks
 

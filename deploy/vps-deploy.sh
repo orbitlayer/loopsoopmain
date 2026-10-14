@@ -24,6 +24,12 @@ ENV_FILE="${HOME}/.loopsoop.env"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${SCRIPT_DIR}/.."
 
+# Shared network so the app can reach the MySQL container (loopsoop-db) by name.
+# Created here too (idempotent) so the run below never fails if the DB hasn't
+# been provisioned yet. See deploy/vps-db.sh to stand up MySQL + load the schema.
+NETWORK="loopsoop-net"
+docker network create "${NETWORK}" >/dev/null 2>&1 || true
+
 # 1) Persist a strong SESSION_SECRET so admin sessions survive redeploys.
 if [ ! -f "${ENV_FILE}" ]; then
   ( umask 077; printf 'SESSION_SECRET=%s\n' "$(openssl rand -hex 32)" > "${ENV_FILE}" )
@@ -38,6 +44,7 @@ docker rm -f "${NAME}" >/dev/null 2>&1 || true
 docker run -d \
   --name "${NAME}" \
   --restart unless-stopped \
+  --network "${NETWORK}" \
   -p "${HOST_PORT}:3000" \
   --env-file "${ENV_FILE}" \
   -e NODE_ENV=production \
