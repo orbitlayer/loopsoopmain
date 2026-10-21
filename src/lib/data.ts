@@ -150,6 +150,7 @@ export const editingCategories: EditingCategory[] = [
   { slug: "2d-animation", name: "2D Animation", description: "Custom 2D animation and illustrated explainers that turn complex ideas into simple, scroll-stopping stories.", seed: 33, image: "" },
   { slug: "real-estate", name: "Real Estate", description: "Cinematic property tours and walkthroughs that sell every space before the first visit.", seed: 44, image: "/categories/luxury.webp?v=2" },
   { slug: "commercials", name: "Commercials", description: "Punchy, high-converting ads and brand films crafted to stop the scroll and drive action.", seed: 21, image: "/categories/commercial.webp?v=2" },
+  { slug: "gaming", name: "Gaming", description: "High-energy gaming edits - montages, highlights and stream moments that hit hard.", seed: 3, image: "/categories/gaming.webp?v=2" },
 ];
 
 /* Translate between a ?category= slug and its display name. */
