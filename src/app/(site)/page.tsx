@@ -15,7 +15,6 @@ import { Globe } from "@/components/ui/Globe";
 import { KineticText } from "@/components/studio/KineticText";
 import { CircularGallery } from "@/components/studio/CircularGallery";
 import { ScrollStack } from "@/components/studio/ScrollStack";
-import { ScrollReel } from "@/components/studio/ScrollReel";
 import { StickyProcess } from "@/components/studio/StickyProcess";
 import { StatBand } from "@/components/studio/StatBand";
 import { MarqueeReviews } from "@/components/studio/MarqueeReviews";
@@ -121,26 +120,6 @@ export default async function HomePage() {
             </div>
           </div>
         </Container>
-      </section>
-
-      {/* ------------------------------------------------------ Showreel */}
-      <section className="relative overflow-hidden pt-14 md:pt-24">
-        <Container className="relative z-10">
-          <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
-            <div>
-              <span className={EYEBROW}>The Showreel</span>
-              <KineticText
-                as="h2"
-                text="Stories, cut for impact."
-                className={H2}
-              />
-            </div>
-            <MagneticButton href="/our-work" variant="ghost">
-              Watch the reel
-            </MagneticButton>
-          </div>
-        </Container>
-        <ScrollReel className="mt-14 md:mt-16" />
       </section>
 
       {/* ---------------------------------------------- Our Work carousel */}

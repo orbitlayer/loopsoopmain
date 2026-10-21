@@ -3,7 +3,6 @@ import { StructuredData } from "@/components/StructuredData";
 import { MaintenanceScreen } from "@/components/MaintenanceScreen";
 import { WhatsAppFloat } from "@/components/ui/WhatsAppFloat";
 import { SkeletonLoader } from "@/components/studio/SkeletonLoader";
-import { Cursor } from "@/components/studio/Cursor";
 import { Grain } from "@/components/studio/Grain";
 import { MenuNav } from "@/components/studio/MenuNav";
 import { FooterNew } from "@/components/studio/FooterNew";
@@ -20,7 +19,16 @@ import { site, whatsappLink } from "@/lib/data";
  */
 export const dynamic = "force-dynamic";
 
+// Header nav — "About" intentionally omitted; it lives in the footer only.
 const NAV = [
+  { label: "Home", href: "/" },
+  { label: "Our Work", href: "/our-work" },
+  { label: "Portfolio", href: "/portfolio" },
+  { label: "Contact", href: "/contact" },
+];
+
+// Footer keeps the full set, including About.
+const FOOTER_NAV = [
   { label: "Home", href: "/" },
   { label: "Our Work", href: "/our-work" },
   { label: "Portfolio", href: "/portfolio" },
@@ -75,7 +83,6 @@ export default async function HomeLayout({
         </a>
 
         <SkeletonLoader />
-        <Cursor />
         <Grain />
         <MenuNav navItems={NAV} ctaHref="/contact" email={info.email} />
 
@@ -84,7 +91,7 @@ export default async function HomeLayout({
         </main>
 
         <FooterNew
-          navItems={NAV}
+          navItems={FOOTER_NAV}
           services={services}
           email={info.email}
           socials={socials}

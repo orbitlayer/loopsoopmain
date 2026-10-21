@@ -70,17 +70,20 @@ export function MenuNav({
           <Link
             href="/"
             aria-label="Loopsoop — home"
-            className="inline-flex items-center"
+            className="inline-flex items-center gap-2.5"
           >
             <Image
               src="/loopmark.png"
-              alt="Loopsoop"
+              alt=""
               width={400}
               height={297}
               priority
               unoptimized
               className="h-8 w-auto md:h-9"
             />
+            <span className="font-logo text-[1.35rem] font-semibold tracking-[-0.03em] text-ink">
+              Loopsoop
+            </span>
           </Link>
 
           {/* Centered tubelight pill nav — desktop. */}
