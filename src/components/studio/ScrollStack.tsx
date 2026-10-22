@@ -194,35 +194,45 @@ export function ScrollStack({ items, className }: ScrollStackProps) {
               "relative flex min-h-[clamp(300px,52vh,460px)] flex-col justify-center overflow-hidden rounded-[24px] border border-line bg-white p-7 md:min-h-[clamp(380px,62vh,620px)] md:p-14",
             )}
           >
-            {/* Sequence number beside the title (side-wise), description below. */}
-            <div className="flex items-start gap-4 md:gap-6">
-              <span
-                aria-hidden
-                className={cn(
-                  styles.index,
-                  "font-display shrink-0 text-[clamp(1.6rem,4vw,3rem)] font-normal leading-none text-ink/25",
-                )}
-              >
-                {pad2(i + 1)}
-              </span>
-              <div className="min-w-0">
-                {item.eyebrow ? (
-                  <span className="mb-2 block text-[0.7rem] uppercase tracking-[0.3em] text-[#8a8a85]">
-                    {item.eyebrow}
+            {/* Two columns on md+: number/title/description on the left, the
+                "what's included" list on the right, vertically centred so the
+                big panel never reads hollow. Stacks to one column on phones. */}
+            <div className="grid gap-8 md:grid-cols-[1fr_0.82fr] md:items-center md:gap-12 lg:gap-20">
+              <div className="flex items-start gap-4 md:gap-6">
+                <span
+                  aria-hidden
+                  className={cn(
+                    styles.index,
+                    "font-display shrink-0 text-[clamp(1.6rem,4vw,3rem)] font-normal leading-none text-ink/25",
+                  )}
+                >
+                  {pad2(i + 1)}
+                </span>
+                <div className="min-w-0">
+                  {item.eyebrow ? (
+                    <span className="mb-2 block text-[0.7rem] uppercase tracking-[0.3em] text-[#8a8a85]">
+                      {item.eyebrow}
+                    </span>
+                  ) : null}
+                  <h3 className="font-display text-[clamp(1.9rem,4.5vw,3.4rem)] font-normal leading-[1.02] tracking-[-0.02em] text-ink">
+                    {item.title}
+                  </h3>
+                  <p className="mt-4 text-base leading-relaxed text-[#6b6b6b] md:mt-5 md:text-lg">
+                    {item.description}
+                  </p>
+                </div>
+              </div>
+
+              {item.points?.length ? (
+                <div className="md:border-l md:border-line md:pl-12 lg:pl-16">
+                  <span className="block text-[0.7rem] uppercase tracking-[0.3em] text-[#8a8a85]">
+                    What&apos;s included
                   </span>
-                ) : null}
-                <h3 className="font-display max-w-[16ch] text-[clamp(1.9rem,4.5vw,3.2rem)] font-normal leading-[1.02] tracking-[-0.02em] text-ink">
-                  {item.title}
-                </h3>
-                <p className="mt-3 max-w-xl text-base leading-relaxed text-[#6b6b6b] md:mt-4 md:text-lg">
-                  {item.description}
-                </p>
-                {item.points?.length ? (
-                  <ul className="mt-6 grid max-w-xl gap-3 md:mt-8 md:gap-4">
+                  <ul className="mt-5 grid gap-3.5 md:mt-6 md:gap-4">
                     {item.points.map((pt) => (
                       <li
                         key={pt}
-                        className="flex items-start gap-3 text-sm leading-relaxed text-ink/70 md:text-base"
+                        className="flex items-start gap-3 text-sm leading-relaxed text-ink/75 md:text-base"
                       >
                         <span
                           aria-hidden
@@ -232,8 +242,8 @@ export function ScrollStack({ items, className }: ScrollStackProps) {
                       </li>
                     ))}
                   </ul>
-                ) : null}
-              </div>
+                </div>
+              ) : null}
             </div>
           </li>
         ))}

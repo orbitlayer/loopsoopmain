@@ -260,6 +260,7 @@ export const processSteps = [
       "Goals & audience deep-dive",
       "References & moodboard review",
       "Scope, timeline & deliverables agreed",
+      "A clear creative brief to work from",
     ],
   },
   {
@@ -271,6 +272,7 @@ export const processSteps = [
     points: [
       "Narrative & shot structure",
       "Style, pacing & music direction",
+      "Music & asset sourcing",
       "An edit roadmap you sign off on",
     ],
   },
@@ -283,6 +285,7 @@ export const processSteps = [
     points: [
       "Story assembly & tight cut",
       "Colour grade & motion graphics",
+      "Captions & on-screen text",
       "Sound design, music & mix",
     ],
   },
@@ -295,6 +298,7 @@ export const processSteps = [
     points: [
       "Structured review rounds",
       "Frame-level polish",
+      "Final technical QC",
       "Revisions until it's right",
     ],
   },
@@ -307,6 +311,7 @@ export const processSteps = [
     points: [
       "Platform-ready exports",
       "Thumbnails & captions on request",
+      "Source files available on request",
       "An organised, final handoff",
     ],
   },
