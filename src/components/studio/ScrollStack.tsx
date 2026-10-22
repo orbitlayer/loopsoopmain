@@ -174,11 +174,11 @@ export function ScrollStack({ items, className }: ScrollStackProps) {
   if (!items || items.length === 0) return null;
 
   return (
-    <div className={cn("w-full px-5 sm:px-8 lg:px-12", className)}>
+    <div className={cn("w-full px-4 sm:px-6 lg:px-8", className)}>
       <ol
         ref={listRef}
         data-enhanced={enhanced ? "true" : undefined}
-        className={cn(styles.stack, "mx-auto w-full max-w-[1100px]")}
+        className={cn(styles.stack, "mx-auto w-full max-w-[1440px]")}
       >
         {items.map((item, i) => (
           <li
@@ -189,7 +189,7 @@ export function ScrollStack({ items, className }: ScrollStackProps) {
             style={{ ["--i" as string]: i, zIndex: i + 1 }}
             className={cn(
               styles.card,
-              "relative flex min-h-[clamp(190px,24vh,260px)] flex-col justify-center overflow-hidden rounded-[24px] border border-line bg-white p-7 md:min-h-[clamp(220px,30vh,320px)] md:p-11",
+              "relative flex min-h-[clamp(300px,52vh,460px)] flex-col justify-center overflow-hidden rounded-[24px] border border-line bg-white p-7 md:min-h-[clamp(380px,62vh,620px)] md:p-14",
             )}
           >
             {/* Sequence number beside the title (side-wise), description below. */}
