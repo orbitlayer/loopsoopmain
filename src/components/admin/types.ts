@@ -1,7 +1,7 @@
 export type AdminCategory = { id: string; name: string; slug: string };
 
 export type VideoType = "long" | "short";
-export type VideoProvider = "youtube" | "google_drive";
+export type VideoProvider = "youtube" | "google_drive" | "upload";
 
 export type PortfolioItem = {
   id: string;

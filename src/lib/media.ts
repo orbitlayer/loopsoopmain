@@ -39,6 +39,10 @@ export function contentTypeForExt(ext: string): string {
     gif: "image/gif",
     svg: "image/svg+xml",
     avif: "image/avif",
+    mp4: "video/mp4",
+    webm: "video/webm",
+    mov: "video/quicktime",
+    mkv: "video/x-matroska",
   };
   return map[ext.toLowerCase()] ?? "application/octet-stream";
 }

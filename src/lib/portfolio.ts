@@ -39,6 +39,7 @@ function rowToProject(r: Row): Project {
       provider === "google_drive"
         ? extractDriveId(r.video_url) ?? undefined
         : undefined,
+    fileUrl: provider === "upload" ? r.video_url ?? undefined : undefined,
     thumbnailUrl: r.thumbnail_url ?? undefined,
     featured: Boolean(r.is_featured),
   };

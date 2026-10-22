@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight, X } from "lucide-react";
 import type { Project } from "@/lib/data";
 import { cn } from "@/lib/cn";
-import { videoThumbnail, videoEmbedUrl } from "@/lib/video";
+import { videoThumbnail, videoEmbedUrl, isSelfHosted } from "@/lib/video";
 import { MediaPlaceholder } from "@/components/ui/MediaPlaceholder";
 
 export function ProjectCard({
@@ -22,6 +22,7 @@ export function ProjectCard({
   const [open, setOpen] = useState(false);
   const embedUrl = videoEmbedUrl(project);
   const hasVideo = Boolean(embedUrl);
+  const selfHosted = isSelfHosted(project.provider);
   const portrait = orientation === "portrait";
   const thumb = videoThumbnail(project);
 
@@ -157,13 +158,24 @@ export function ProjectCard({
                   portrait ? "aspect-[9/16]" : "aspect-video",
                 )}
               >
-                <iframe
-                  src={embedUrl}
-                  title={project.title}
-                  allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-                  allowFullScreen
-                  className="h-full w-full"
-                />
+                {selfHosted ? (
+                  <video
+                    src={embedUrl}
+                    poster={thumb}
+                    controls
+                    autoPlay
+                    playsInline
+                    className="h-full w-full bg-black"
+                  />
+                ) : (
+                  <iframe
+                    src={embedUrl}
+                    title={project.title}
+                    allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                    allowFullScreen
+                    className="h-full w-full"
+                  />
+                )}
               </div>
             </motion.div>
           </motion.div>

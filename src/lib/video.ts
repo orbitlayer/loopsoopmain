@@ -7,12 +7,23 @@ import { extractYouTubeId, youtubeThumb } from "@/lib/youtube";
  * ProjectCard container — only the underlying player differs.
  */
 
-export type VideoProvider = "youtube" | "google_drive";
+export type VideoProvider = "youtube" | "google_drive" | "upload";
 
 export const VIDEO_PROVIDERS: { value: VideoProvider; label: string }[] = [
   { value: "youtube", label: "YouTube" },
   { value: "google_drive", label: "Google Drive" },
+  { value: "upload", label: "Upload to hosting" },
 ];
+
+/* Self-hosted video. Accepted MIME types -> file extension, and the size
+   ceiling. Files are streamed to UPLOADS_DIR and served from /media/<file>. */
+export const VIDEO_UPLOAD_TYPES: Record<string, string> = {
+  "video/mp4": "mp4",
+  "video/webm": "webm",
+  "video/quicktime": "mov",
+  "video/x-matroska": "mkv",
+};
+export const VIDEO_UPLOAD_MAX_BYTES = 1024 * 1024 * 1024; // 1GB
 
 // Matches /file/d/<id>/... and ?id=<id> / &id=<id> (open?id=…). Drive IDs are
 // long url-safe strings; 20+ chars in practice, but allow 10+ to be safe.
@@ -53,18 +64,26 @@ type VideoLike = {
   youtubeId?: string;
   driveId?: string;
   thumbnailUrl?: string;
+  /** Self-hosted file URL, e.g. /media/<uuid>.mp4 (provider === "upload"). */
+  fileUrl?: string;
 };
+
+/** True when the item plays from our own hosting (a <video>, not an iframe). */
+export const isSelfHosted = (provider?: VideoProvider) => provider === "upload";
 
 /** Thumbnail URL for a portfolio item, or undefined if none can be derived. */
 export function videoThumbnail(v: VideoLike): string | undefined {
+  if (v.provider === "upload") return v.thumbnailUrl || undefined;
   if (v.provider === "google_drive") {
     return v.thumbnailUrl || (v.driveId ? driveThumbnail(v.driveId) : undefined);
   }
   return v.youtubeId ? youtubeThumb(v.youtubeId) : undefined;
 }
 
-/** Embed URL for the in-page player, or undefined if none. */
+/** Playable URL for the in-page player (an iframe src, or a <video> src for
+    self-hosted uploads), or undefined if none. */
 export function videoEmbedUrl(v: VideoLike): string | undefined {
+  if (v.provider === "upload") return v.fileUrl || undefined;
   if (v.provider === "google_drive") {
     return v.driveId ? drivePreviewEmbed(v.driveId) : undefined;
   }

@@ -99,10 +99,11 @@ export type Project = {
   filter: string; // matches a filter chip on /our-work (an editingCategories name)
   type: "long" | "short"; // long-form (16:9) or short-form (9:16) — drives the subsection
   seed: number; // deterministic placeholder variation (fallback when no thumbnail)
-  provider?: "youtube" | "google_drive"; // video source (defaults to youtube)
+  provider?: "youtube" | "google_drive" | "upload"; // video source (defaults to youtube)
   youtubeId?: string; // YouTube video ID — powers the thumbnail + modal player
   driveId?: string; // Google Drive file ID — powers the preview embed
-  thumbnailUrl?: string; // explicit thumbnail (Drive override / fallback)
+  fileUrl?: string; // self-hosted file URL, e.g. /media/<uuid>.mp4 (provider "upload")
+  thumbnailUrl?: string; // explicit thumbnail (Drive/upload override or fallback)
   featured?: boolean;
 };
 

@@ -37,7 +37,7 @@ export type ItemInput = {
   category_id: string;
   title: string;
   subtitle: string | null;
-  video_provider: "youtube" | "google_drive";
+  video_provider: "youtube" | "google_drive" | "upload";
   video_url: string;
   youtube_id: string | null;
   youtube_url: string | null;
