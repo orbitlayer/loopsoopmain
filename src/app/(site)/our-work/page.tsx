@@ -1,16 +1,13 @@
 import type { Metadata } from "next";
 import { styleIncludes } from "@/lib/data";
-import { getVisibleCategories } from "@/lib/categories";
 import { getFeaturedProjects } from "@/lib/portfolio";
 import { resolvePageMetadata } from "@/lib/content";
-import { videoThumbnail } from "@/lib/video";
 import { Icon } from "@/lib/icons";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
-import { CategoryCard } from "@/components/sections/CategoryCard";
+import { ProjectCard } from "@/components/sections/ProjectCard";
 import { PageStructuredData } from "@/components/PageStructuredData";
 import { KineticText } from "@/components/studio/KineticText";
-import { CircularGallery } from "@/components/studio/CircularGallery";
 import { MagneticButton } from "@/components/studio/MagneticButton";
 import { OrbitRings } from "@/components/studio/motion/OrbitRings";
 import { TickerGrid } from "@/components/studio/motion/TickerGrid";
@@ -28,17 +25,7 @@ const H2 =
   "mt-5 block font-display font-normal leading-[0.98] tracking-[-0.02em] text-[clamp(1.9rem,4.6vw,3.5rem)] text-ink";
 
 export default async function OurWorkPage() {
-  const categories = await getVisibleCategories();
   const featured = await getFeaturedProjects();
-
-  const projects = featured.map((p, i) => ({
-    id: p.id,
-    title: p.title,
-    category: p.category,
-    thumb: videoThumbnail(p),
-    href: "/portfolio",
-    index: i + 1,
-  }));
 
   return (
     <>
@@ -101,8 +88,11 @@ export default async function OurWorkPage() {
         </div>
       </section>
 
-      {/* -------------------------------------------- Featured work carousel */}
-      <section className="relative overflow-hidden py-14 md:py-20">
+      {/* ------------------------------------------------- Featured work */}
+      <section
+        id="work"
+        className="relative scroll-mt-24 overflow-hidden py-14 md:py-20"
+      >
         <Container className="relative z-10">
           <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
             <div>
@@ -113,30 +103,10 @@ export default async function OurWorkPage() {
               View full portfolio
             </MagneticButton>
           </div>
-        </Container>
-        <CircularGallery projects={projects} className="mt-10" />
-      </section>
-
-      {/* ---------------------------------------------------- Category grid */}
-      {/* Each card deep-links into the filtered portfolio — functional core. */}
-      <section
-        id="work"
-        className="relative scroll-mt-24 overflow-hidden py-14 md:py-20"
-      >
-        <Container className="relative z-10">
-          <div className="max-w-2xl">
-            <span className={EYEBROW}>Explore by service</span>
-            <KineticText
-              as="h2"
-              text="Five things we do best."
-              className={H2}
-            />
-          </div>
-
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {categories.map((c, i) => (
-              <Reveal key={c.slug} delay={(i % 3) * 0.08}>
-                <CategoryCard category={c} index={i} />
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {featured.map((p, i) => (
+              <Reveal key={p.id} delay={(i % 3) * 0.08}>
+                <ProjectCard project={p} showArrow className="group" />
               </Reveal>
             ))}
           </div>

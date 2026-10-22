@@ -124,7 +124,10 @@ export function Globe({ className }: { className?: string }) {
       const z1 = -p.x * sy + p.z * cy;
       const sp = Math.sin(theta);
       const cp = Math.cos(theta);
-      return { x: x1, y: p.y * cp - z1 * sp, z: p.y * sp + z1 * cp };
+      // Project with north UP (canvas y grows downward, so negate y) and east to
+      // the RIGHT (negate x). Without this the map renders upside-down and
+      // mirrored, and the auto-spin reads as running backwards.
+      return { x: -x1, y: -(p.y * cp - z1 * sp), z: p.y * sp + z1 * cp };
     };
 
     const draw = () => {
@@ -273,9 +276,11 @@ export function Globe({ className }: { className?: string }) {
       const dy = (e.clientY - drag.lastY) * 0.006; // vertical → pitch
       drag.lastX = e.clientX;
       drag.lastY = e.clientY;
-      phi += dx;
+      // Yaw is negated to match the mirrored projection, so dragging right spins
+      // the globe to the right (natural) rather than backwards.
+      phi -= dx;
       theta += dy;
-      drag.vx = dx;
+      drag.vx = -dx;
       drag.vy = dy;
     };
     const onUp = (e: PointerEvent) => {

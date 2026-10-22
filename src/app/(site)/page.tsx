@@ -1,10 +1,5 @@
 import type { Metadata } from "next";
-import {
-  processSteps,
-  statsMain,
-  testimonials,
-  trustedHome,
-} from "@/lib/data";
+import { processSteps, statsMain, trustedHome } from "@/lib/data";
 import { getFeaturedProjects } from "@/lib/portfolio";
 import { getVisibleCategories } from "@/lib/categories";
 import { resolvePageMetadata } from "@/lib/content";
@@ -17,7 +12,6 @@ import { CircularGallery } from "@/components/studio/CircularGallery";
 import { ScrollStack } from "@/components/studio/ScrollStack";
 import { StickyProcess } from "@/components/studio/StickyProcess";
 import { StatBand } from "@/components/studio/StatBand";
-import { MarqueeReviews } from "@/components/studio/MarqueeReviews";
 import { MagneticButton } from "@/components/studio/MagneticButton";
 import { OrbitRings } from "@/components/studio/motion/OrbitRings";
 import { TickerGrid } from "@/components/studio/motion/TickerGrid";
@@ -55,12 +49,6 @@ export default async function HomePage() {
     description: s.description,
   }));
   const stats = statsMain.map((s) => ({ value: s.value, label: s.label }));
-  const reviews = testimonials.map((t) => ({
-    quote: t.quote,
-    name: t.name,
-    role: t.role,
-    brand: t.brand,
-  }));
 
   return (
     <>
@@ -197,18 +185,9 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {/* ------------------------------------------------- Testimonials */}
+      {/* --------------------------------------------------- Trusted by */}
       <section className="relative overflow-hidden py-14 md:py-20">
-        <Container className="relative z-10 mb-14">
-          <span className={EYEBROW}>Client Love</span>
-          <KineticText
-            as="h2"
-            text="Trusted by the brands you know."
-            className={`${H2} max-w-2xl`}
-          />
-        </Container>
-        <MarqueeReviews reviews={reviews} />
-        <Container className="relative z-10 mt-20">
+        <Container className="relative z-10">
           <p className={`${EYEBROW} mb-6 text-center`}>Trusted by</p>
           <LogoLoop gap={48} speed={28} className="opacity-70">
             {trustedHome.map((b) => (

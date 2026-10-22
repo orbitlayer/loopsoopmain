@@ -88,14 +88,19 @@ export function FooterNew({
         {/* Columns. */}
         <div className="grid gap-12 md:grid-cols-12 md:gap-8">
           <div className="md:col-span-4">
-            <Image
-              src="/loopmark.png"
-              alt="Loopsoop"
-              width={400}
-              height={297}
-              unoptimized
-              className="h-10 w-auto"
-            />
+            <div className="flex items-center gap-2.5">
+              <Image
+                src="/loopmark.png"
+                alt=""
+                width={400}
+                height={297}
+                unoptimized
+                className="h-9 w-auto"
+              />
+              <span className="font-logo text-[1.6rem] font-semibold tracking-[-0.03em] text-ink">
+                Loopsoop
+              </span>
+            </div>
             <p className="mt-5 max-w-xs text-sm leading-relaxed text-muted">
               {STUDIO_BLURB}
             </p>
