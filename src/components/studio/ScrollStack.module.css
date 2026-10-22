@@ -28,8 +28,8 @@
   /* base ≈ 12vh; each later card pins `step` lower for the peeking pile edge.
      JS overwrites --stack-top / --stack-step with resolved px after mount so
      the scale timing stays in sync; these are the SSR / no-JS defaults. */
-  top: calc(var(--stack-top, 12vh) + var(--i, 0) * var(--stack-step, 12px));
-  margin-bottom: clamp(2rem, 6vh, 4rem);
+  top: calc(var(--stack-top, 14vh) + var(--i, 0) * var(--stack-step, 18px));
+  margin-bottom: clamp(1.25rem, 4vh, 2.5rem);
   transform-origin: center top;
   will-change: transform, opacity;
   box-shadow: 0 30px 80px -42px rgba(17, 17, 17, 0.26);

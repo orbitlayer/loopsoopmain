@@ -39,14 +39,14 @@ export interface ScrollStackProps {
   className?: string;
 }
 
-/** Sticky top ≈ 12vh; each later card pins STAGGER px lower (the pile edge). */
-const STACK_TOP_RATIO = 0.12;
-const STAGGER = 12;
+/** Sticky top ≈ 14vh; each later card pins STAGGER px lower (the pile edge). */
+const STACK_TOP_RATIO = 0.14;
+const STAGGER = 18;
 /** Per covering card: scale shrinks SCALE_STEP, opacity dims OPACITY_STEP. */
-const SCALE_STEP = 0.04;
-const OPACITY_STEP = 0.05;
+const SCALE_STEP = 0.05;
+const OPACITY_STEP = 0.04;
 /** Deepest buried card never recedes past MAX_DEPTH steps (stays readable). */
-const MAX_DEPTH = 4;
+const MAX_DEPTH = 5;
 
 const clamp = (v: number, min: number, max: number) =>
   Math.min(max, Math.max(min, v));
@@ -189,7 +189,7 @@ export function ScrollStack({ items, className }: ScrollStackProps) {
             style={{ ["--i" as string]: i, zIndex: i + 1 }}
             className={cn(
               styles.card,
-              "relative flex min-h-[clamp(230px,30vh,380px)] flex-col justify-center overflow-hidden rounded-[24px] border border-line bg-white p-7 md:min-h-[clamp(320px,42vh,480px)] md:p-12",
+              "relative flex min-h-[clamp(190px,24vh,260px)] flex-col justify-center overflow-hidden rounded-[24px] border border-line bg-white p-7 md:min-h-[clamp(220px,30vh,320px)] md:p-11",
             )}
           >
             {/* Sequence number beside the title (side-wise), description below. */}
