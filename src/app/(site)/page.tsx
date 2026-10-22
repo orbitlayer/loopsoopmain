@@ -9,7 +9,7 @@ import { HeroCards } from "@/components/sections/HeroCards";
 import { Globe } from "@/components/ui/Globe";
 import { KineticText } from "@/components/studio/KineticText";
 import { CircularGallery } from "@/components/studio/CircularGallery";
-import { StickyProcess } from "@/components/studio/StickyProcess";
+import { ScrollStack } from "@/components/studio/ScrollStack";
 import { StatBand } from "@/components/studio/StatBand";
 import { MagneticButton } from "@/components/studio/MagneticButton";
 import { OrbitRings } from "@/components/studio/motion/OrbitRings";
@@ -43,7 +43,6 @@ export default async function HomePage() {
     description: c.description,
   }));
   const steps = processSteps.map((s) => ({
-    n: s.n,
     title: s.title,
     description: s.description,
   }));
@@ -156,11 +155,17 @@ export default async function HomePage() {
       </section>
 
       {/* ---------------------------------------------------- Process */}
-      <StickyProcess
-        steps={steps}
-        eyebrow="How it works"
-        heading="From brief to final cut."
-      />
+      <section className="relative overflow-hidden py-14 md:py-20">
+        <Container className="relative z-10">
+          <span className={EYEBROW}>How it works</span>
+          <KineticText
+            as="h2"
+            text="From brief to final cut."
+            className={`${H2} max-w-xl`}
+          />
+        </Container>
+        <ScrollStack items={steps} className="mt-10 md:mt-14" />
+      </section>
 
       {/* ----------------------------------------------- Global reach */}
       <section className="relative overflow-hidden py-14 md:py-20">
