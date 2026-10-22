@@ -125,6 +125,14 @@ export async function listMedia(): Promise<MediaItem[]> {
   );
 }
 
+/* Just the self-hosted videos — used by the portfolio form's library picker so
+   a clip uploaded once can be reused across items without re-uploading. */
+export async function listVideoMedia(): Promise<MediaItem[]> {
+  return await query<MediaItem>(
+    "SELECT id, filename, original_name, mime, size, created_at, uploaded_by FROM media WHERE mime LIKE 'video/%' ORDER BY created_at DESC",
+  );
+}
+
 export async function deleteMedia(id: string): Promise<void> {
   const rows = await query<{ filename: string }>(
     "SELECT filename FROM media WHERE id = ? LIMIT 1",

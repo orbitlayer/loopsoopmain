@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Check, Film } from "lucide-react";
 import { createItem, updateItem } from "@/lib/actions";
+import { listVideoMediaAction } from "@/lib/media-actions";
 import { extractYouTubeId, youtubeThumb, youtubeWatchUrl } from "@/lib/youtube";
 import {
   extractDriveId,
@@ -14,6 +16,13 @@ import {
 } from "@/lib/video";
 import { Button, Field, SelectInput, Switch, TextInput } from "./ui";
 import type { AdminCategory, PortfolioItem, VideoType } from "./types";
+
+type LibraryVideo = {
+  id: string;
+  filename: string;
+  original_name: string;
+  size: number;
+};
 
 type ItemWrite = {
   category_id: string;
@@ -77,6 +86,13 @@ export function VideoForm({
   const [uploadName, setUploadName] = useState("");
   const [uploading, setUploading] = useState(false);
   const [uploadPct, setUploadPct] = useState(0);
+  // Reuse an already-uploaded clip from the media library instead of uploading.
+  const [uploadMode, setUploadMode] = useState<"new" | "library">("new");
+  const [libraryVideos, setLibraryVideos] = useState<LibraryVideo[] | null>(
+    null,
+  );
+  const [libraryLoading, setLibraryLoading] = useState(false);
+  const uploadXhrRef = useRef<XMLHttpRequest | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -90,6 +106,26 @@ export function VideoForm({
   const ytId = extractYouTubeId(url);
   const drId = extractDriveId(url);
   const urlValid = isDrive ? Boolean(drId) : Boolean(ytId);
+
+  // Load the library of already-uploaded clips the first time the upload source
+  // is chosen, so "Choose from library" can show a count + a selectable grid.
+  useEffect(() => {
+    if (!isUpload || libraryVideos !== null || libraryLoading) return;
+    setLibraryLoading(true);
+    listVideoMediaAction()
+      .then((rows) =>
+        setLibraryVideos(
+          rows.map((r) => ({
+            id: r.id,
+            filename: r.filename,
+            original_name: r.original_name,
+            size: r.size,
+          })),
+        ),
+      )
+      .catch(() => setLibraryVideos([]))
+      .finally(() => setLibraryLoading(false));
+  }, [isUpload, libraryVideos, libraryLoading]);
 
   // Stream the chosen file to our own hosting, reporting live progress.
   function handleFile(file: File) {
@@ -107,6 +143,7 @@ export function VideoForm({
     setUploadPct(0);
     setUploading(true);
     const xhr = new XMLHttpRequest();
+    uploadXhrRef.current = xhr;
     xhr.open(
       "POST",
       `/api/admin/upload-video?name=${encodeURIComponent(file.name)}&type=${encodeURIComponent(file.type)}`,
@@ -117,11 +154,29 @@ export function VideoForm({
     };
     xhr.onload = () => {
       setUploading(false);
+      uploadXhrRef.current = null;
       if (xhr.status >= 200 && xhr.status < 300) {
         try {
-          const r = JSON.parse(xhr.responseText) as { url: string };
+          const r = JSON.parse(xhr.responseText) as {
+            url: string;
+            filename: string;
+            size: number;
+          };
           setUploadedUrl(r.url);
           setUploadPct(100);
+          // Surface the just-uploaded clip in "Choose from library" right away,
+          // so the grid + count aren't stale within this same open form.
+          setLibraryVideos((prev) => {
+            const entry: LibraryVideo = {
+              id: r.filename,
+              filename: r.filename,
+              original_name: file.name,
+              size: r.size,
+            };
+            if (!prev) return [entry];
+            if (prev.some((v) => v.filename === r.filename)) return prev;
+            return [entry, ...prev];
+          });
         } catch {
           setError("Upload finished but the server response was invalid.");
         }
@@ -137,7 +192,11 @@ export function VideoForm({
     };
     xhr.onerror = () => {
       setUploading(false);
+      uploadXhrRef.current = null;
       setError("Upload failed - check your connection and try again.");
+    };
+    xhr.onabort = () => {
+      uploadXhrRef.current = null;
     };
     xhr.send(file);
   }
@@ -158,7 +217,7 @@ export function VideoForm({
         return;
       }
       if (!uploadedUrl) {
-        setError("Upload a video file first.");
+        setError("Upload or choose a video first.");
         return;
       }
     } else if (!isValidVideoUrl(provider, url)) {
@@ -313,60 +372,162 @@ export function VideoForm({
 
           {isUpload && (
             <Field
-              label="Video file"
-              hint="MP4, WebM, MOV or MKV - up to 1GB. Streamed from your own hosting."
+              label="Video"
+              hint={
+                uploadMode === "new"
+                  ? "MP4, WebM, MOV or MKV - up to 1GB. Streamed from your own hosting."
+                  : "Reuse a clip you've already uploaded to hosting."
+              }
             >
-              {!uploadedUrl && !uploading && (
-                <label className="flex cursor-pointer items-center justify-center rounded-xl border border-dashed border-line bg-subtle px-4 py-6 text-center text-sm text-faint transition-colors hover:border-ink/40 hover:text-ink">
-                  <input
-                    type="file"
-                    accept="video/mp4,video/webm,video/quicktime,video/x-matroska"
-                    className="sr-only"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      e.target.value = "";
-                      if (f) handleFile(f);
-                    }}
-                  />
-                  Click to choose a video to upload
-                </label>
-              )}
-              {uploading && (
-                <div className="rounded-xl border border-line bg-subtle p-3">
-                  <div className="flex items-center justify-between text-xs text-ink">
-                    <span className="truncate pr-2">{uploadName}</span>
-                    <span className="tabular-nums">{uploadPct}%</span>
-                  </div>
-                  <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-line">
-                    <div
-                      className="h-full rounded-full bg-ink transition-[width] duration-150"
-                      style={{ width: `${uploadPct}%` }}
-                    />
-                  </div>
-                  <p className="mt-2 text-[0.7rem] text-faint">
-                    Uploading - keep this window open until it reaches 100%.
-                  </p>
-                </div>
-              )}
-              {uploadedUrl && !uploading && (
-                <div className="flex items-center justify-between gap-2 rounded-xl border border-line bg-subtle p-2.5">
-                  <span className="truncate text-xs text-ink">
-                    Uploaded{" "}
-                    <span className="text-faint">
-                      {uploadName || uploadedUrl}
+              {/* Upload a new file, or reuse one already in the media library. */}
+              <div className="mb-2.5 inline-flex rounded-xl border border-line bg-subtle p-1">
+                <button
+                  type="button"
+                  onClick={() => setUploadMode("new")}
+                  className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+                    uploadMode === "new"
+                      ? "bg-surface text-ink shadow-sm"
+                      : "text-muted hover:text-ink"
+                  }`}
+                >
+                  Upload new
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUploadMode("library")}
+                  className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+                    uploadMode === "library"
+                      ? "bg-surface text-ink shadow-sm"
+                      : "text-muted hover:text-ink"
+                  }`}
+                >
+                  Choose from library
+                  {libraryVideos && libraryVideos.length > 0 && (
+                    <span className="ml-1.5 text-faint">
+                      {libraryVideos.length}
                     </span>
+                  )}
+                </button>
+              </div>
+
+              {uploadMode === "new" ? (
+                <>
+                  {!uploadedUrl && !uploading && (
+                    <label className="flex cursor-pointer items-center justify-center rounded-xl border border-dashed border-line bg-subtle px-4 py-6 text-center text-sm text-faint transition-colors hover:border-ink/40 hover:text-ink">
+                      <input
+                        type="file"
+                        accept="video/mp4,video/webm,video/quicktime,video/x-matroska"
+                        className="sr-only"
+                        onChange={(e) => {
+                          const f = e.target.files?.[0];
+                          e.target.value = "";
+                          if (f) handleFile(f);
+                        }}
+                      />
+                      Click to choose a video to upload
+                    </label>
+                  )}
+                  {uploading && (
+                    <div className="rounded-xl border border-line bg-subtle p-3">
+                      <div className="flex items-center justify-between text-xs text-ink">
+                        <span className="truncate pr-2">{uploadName}</span>
+                        <span className="tabular-nums">{uploadPct}%</span>
+                      </div>
+                      <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-line">
+                        <div
+                          className="h-full rounded-full bg-ink transition-[width] duration-150"
+                          style={{ width: `${uploadPct}%` }}
+                        />
+                      </div>
+                      <p className="mt-2 text-[0.7rem] text-faint">
+                        Uploading - keep this window open until it reaches 100%.
+                      </p>
+                    </div>
+                  )}
+                  {uploadedUrl && !uploading && (
+                    <div className="flex items-center justify-between gap-2 rounded-xl border border-line bg-subtle p-2.5">
+                      <span className="truncate text-xs text-ink">
+                        Selected{" "}
+                        <span className="text-faint">
+                          {uploadName || uploadedUrl}
+                        </span>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setUploadedUrl("");
+                          setUploadPct(0);
+                          setUploadName("");
+                        }}
+                        className="shrink-0 text-xs text-faint underline-offset-2 hover:text-ink hover:underline"
+                      >
+                        Clear
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : libraryLoading && libraryVideos === null ? (
+                <p className="rounded-xl border border-line bg-subtle px-3 py-6 text-center text-xs text-faint">
+                  Loading your uploaded videos…
+                </p>
+              ) : libraryVideos && libraryVideos.length > 0 ? (
+                <div className="grid max-h-64 grid-cols-2 gap-2 overflow-y-auto rounded-xl border border-line bg-subtle p-2">
+                  {libraryVideos.map((v) => {
+                    const vUrl = `/media/${v.filename}`;
+                    const selected = uploadedUrl === vUrl;
+                    return (
+                      <button
+                        key={v.id}
+                        type="button"
+                        onClick={() => {
+                          // Picking a library clip cancels any in-flight upload
+                          // so its onload can't clobber this explicit choice.
+                          if (uploading) {
+                            uploadXhrRef.current?.abort();
+                            setUploading(false);
+                            setUploadPct(0);
+                          }
+                          setUploadedUrl(vUrl);
+                          setUploadName(v.original_name);
+                          setError(null);
+                        }}
+                        className={`relative overflow-hidden rounded-lg border text-left transition-colors ${
+                          selected
+                            ? "border-ink ring-1 ring-ink"
+                            : "border-line hover:border-ink/40"
+                        }`}
+                      >
+                        <video
+                          src={vUrl}
+                          muted
+                          playsInline
+                          preload="metadata"
+                          className="aspect-video w-full bg-black object-contain"
+                        />
+                        {selected && (
+                          <span className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-ink text-white">
+                            <Check className="h-3 w-3" strokeWidth={2.5} />
+                          </span>
+                        )}
+                        <span
+                          className="block truncate bg-surface px-2 py-1 text-[0.65rem] text-ink"
+                          title={v.original_name}
+                        >
+                          {v.original_name}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-1 rounded-xl border border-dashed border-line bg-subtle px-4 py-6 text-center">
+                  <Film className="h-5 w-5 text-faint" strokeWidth={1.5} />
+                  <span className="text-xs text-muted">
+                    No uploaded videos yet
                   </span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setUploadedUrl("");
-                      setUploadPct(0);
-                      setUploadName("");
-                    }}
-                    className="shrink-0 text-xs text-faint underline-offset-2 hover:text-ink hover:underline"
-                  >
-                    Replace
-                  </button>
+                  <span className="text-[0.7rem] text-faint">
+                    Switch to “Upload new” to add your first clip.
+                  </span>
                 </div>
               )}
             </Field>

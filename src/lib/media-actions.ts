@@ -1,10 +1,26 @@
 "use server";
 
 import { requireAdmin } from "@/lib/auth";
-import { saveUpload, deleteMedia, type MediaItem } from "@/lib/media";
+import {
+  saveUpload,
+  deleteMedia,
+  listVideoMedia,
+  type MediaItem,
+} from "@/lib/media";
 import { logAudit } from "@/lib/audit";
 
 /* Media upload/delete. Admin-gated + audit-logged. */
+
+/* Self-hosted videos in the library, for the portfolio form's "Choose from
+   library" picker. Admin-gated; returns [] in no-DB mode or on error. */
+export async function listVideoMediaAction(): Promise<MediaItem[]> {
+  await requireAdmin();
+  try {
+    return await listVideoMedia();
+  } catch {
+    return [];
+  }
+}
 
 export async function uploadMediaAction(
   formData: FormData,
