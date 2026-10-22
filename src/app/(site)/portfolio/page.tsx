@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import { categorySlugToName, statsWork } from "@/lib/data";
 import { getPortfolioProjects } from "@/lib/portfolio";
-import { getVisibleCategories, getVisibleCategoryNames } from "@/lib/categories";
+import { getVisibleCategoryNames } from "@/lib/categories";
 import { resolvePageMetadata } from "@/lib/content";
 import { Container } from "@/components/ui/Container";
-import { Reveal } from "@/components/ui/Reveal";
 import { WorkGrid } from "@/components/sections/WorkGrid";
-import { CategoryCard } from "@/components/sections/CategoryCard";
 import { PageStructuredData } from "@/components/PageStructuredData";
 import { KineticText } from "@/components/studio/KineticText";
 import { StatBand } from "@/components/studio/StatBand";
@@ -31,7 +29,6 @@ export default async function PortfolioPage({
   const { category } = await searchParams;
   const initialCategory = categorySlugToName(category) ?? "All Work";
   const { projects, error } = await getPortfolioProjects();
-  const categories = await getVisibleCategories();
   const filters = ["All Work", ...(await getVisibleCategoryNames())];
   const stats = statsWork.map((s) => ({ value: s.value, label: s.label }));
 
@@ -79,27 +76,6 @@ export default async function PortfolioPage({
             of long-form and short-form video edits crafted for brands,
             creators, startups and businesses.
           </p>
-        </Container>
-      </section>
-
-      {/* ------------------------------------------------ Browse by service */}
-      <section className="relative overflow-hidden py-14 md:py-20">
-        <Container className="relative z-10">
-          <div className="max-w-2xl">
-            <span className={EYEBROW}>Explore by service</span>
-            <KineticText
-              as="h2"
-              text="What we do best."
-              className="mt-5 block font-display font-normal leading-[0.98] tracking-[-0.02em] text-[clamp(1.9rem,4.6vw,3.5rem)] text-ink"
-            />
-          </div>
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {categories.map((c, i) => (
-              <Reveal key={c.slug} delay={(i % 3) * 0.08}>
-                <CategoryCard category={c} index={i} />
-              </Reveal>
-            ))}
-          </div>
         </Container>
       </section>
 

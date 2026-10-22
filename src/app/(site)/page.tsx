@@ -9,7 +9,6 @@ import { HeroCards } from "@/components/sections/HeroCards";
 import { Globe } from "@/components/ui/Globe";
 import { KineticText } from "@/components/studio/KineticText";
 import { CircularGallery } from "@/components/studio/CircularGallery";
-import { ScrollStack } from "@/components/studio/ScrollStack";
 import { StickyProcess } from "@/components/studio/StickyProcess";
 import { StatBand } from "@/components/studio/StatBand";
 import { MagneticButton } from "@/components/studio/MagneticButton";
@@ -135,11 +134,25 @@ export default async function HomePage() {
             text="Built around your story."
             className={`${H2} max-w-xl`}
           />
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 md:mt-14">
+            {services.map((s, i) => (
+              <div
+                key={s.title}
+                className="flex flex-col rounded-[24px] border border-line bg-white p-7 md:p-9"
+              >
+                <span className="font-display text-[clamp(1.3rem,2.4vw,1.8rem)] font-normal leading-none text-ink/25">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <h3 className="font-display mt-4 text-[clamp(1.4rem,3vw,2rem)] font-normal leading-tight tracking-[-0.02em] text-ink">
+                  {s.title}
+                </h3>
+                <p className="mt-3 text-base leading-relaxed text-[#6b6b6b]">
+                  {s.description}
+                </p>
+              </div>
+            ))}
+          </div>
         </Container>
-        <ScrollStack
-          items={services}
-          className="mt-10 md:mt-14"
-        />
       </section>
 
       {/* ---------------------------------------------------- Process */}
