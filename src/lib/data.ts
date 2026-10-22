@@ -250,11 +250,66 @@ export const values = [
 
 /* About / process */
 export const processSteps = [
-  { n: "01", icon: "message-circle", title: "Discover", description: "We understand your goals, vision and target audience." },
-  { n: "02", icon: "folder", title: "Plan", description: "We plan the flow, style and structure for maximum impact." },
-  { n: "03", icon: "scissors", title: "Edit", description: "Our editors bring the story to life with creativity." },
-  { n: "04", icon: "wand-sparkles", title: "Refine", description: "We fine-tune every detail until it's perfect." },
-  { n: "05", icon: "send", title: "Deliver", description: "On-time delivery, optimized and ready to perform." },
+  {
+    n: "01",
+    icon: "message-circle",
+    title: "Discover",
+    description:
+      "We dig into your goals, audience and references so every creative decision has a reason behind it.",
+    points: [
+      "Goals & audience deep-dive",
+      "References & moodboard review",
+      "Scope, timeline & deliverables agreed",
+    ],
+  },
+  {
+    n: "02",
+    icon: "folder",
+    title: "Plan",
+    description:
+      "We map the story, pacing and look before a single clip is cut - so the edit moves with a clear direction.",
+    points: [
+      "Narrative & shot structure",
+      "Style, pacing & music direction",
+      "An edit roadmap you sign off on",
+    ],
+  },
+  {
+    n: "03",
+    icon: "scissors",
+    title: "Edit",
+    description:
+      "Our editors assemble the story - cutting, grading and sound-designing it into something that holds attention.",
+    points: [
+      "Story assembly & tight cut",
+      "Colour grade & motion graphics",
+      "Sound design, music & mix",
+    ],
+  },
+  {
+    n: "04",
+    icon: "wand-sparkles",
+    title: "Refine",
+    description:
+      "You review, we polish. We work through your notes until every frame earns its place on screen.",
+    points: [
+      "Structured review rounds",
+      "Frame-level polish",
+      "Revisions until it's right",
+    ],
+  },
+  {
+    n: "05",
+    icon: "send",
+    title: "Deliver",
+    description:
+      "We export in every format you need and hand off files that are ready to publish the moment they land.",
+    points: [
+      "Platform-ready exports",
+      "Thumbnails & captions on request",
+      "An organised, final handoff",
+    ],
+  },
 ];
 
 /* About / team */

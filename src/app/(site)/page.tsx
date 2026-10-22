@@ -45,6 +45,7 @@ export default async function HomePage() {
   const steps = processSteps.map((s) => ({
     title: s.title,
     description: s.description,
+    points: s.points,
   }));
   const stats = statsMain.map((s) => ({ value: s.value, label: s.label }));
 

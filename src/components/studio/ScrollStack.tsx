@@ -32,6 +32,8 @@ export interface ScrollStackItem {
   eyebrow?: string;
   title: string;
   description: string;
+  /** Optional supporting bullets rendered below the description. */
+  points?: string[];
 }
 
 export interface ScrollStackProps {
@@ -215,6 +217,22 @@ export function ScrollStack({ items, className }: ScrollStackProps) {
                 <p className="mt-3 max-w-xl text-base leading-relaxed text-[#6b6b6b] md:mt-4 md:text-lg">
                   {item.description}
                 </p>
+                {item.points?.length ? (
+                  <ul className="mt-6 grid max-w-xl gap-3 md:mt-8 md:gap-4">
+                    {item.points.map((pt) => (
+                      <li
+                        key={pt}
+                        className="flex items-start gap-3 text-sm leading-relaxed text-ink/70 md:text-base"
+                      >
+                        <span
+                          aria-hidden
+                          className="mt-[0.55em] h-1.5 w-1.5 shrink-0 rounded-full bg-ink/40"
+                        />
+                        <span>{pt}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
               </div>
             </div>
           </li>
