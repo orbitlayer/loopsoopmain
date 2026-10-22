@@ -44,11 +44,12 @@ export interface ScrollStackProps {
 /** Sticky top ≈ 14vh; each later card pins STAGGER px lower (the pile edge). */
 const STACK_TOP_RATIO = 0.14;
 const STAGGER = 18;
-/** Per covering card: scale shrinks SCALE_STEP, opacity dims OPACITY_STEP. */
-const SCALE_STEP = 0.05;
-const OPACITY_STEP = 0.04;
+/** Per covering card: scale shrinks SCALE_STEP, opacity dims OPACITY_STEP.
+    Kept gentle so a deep pile never visibly "shrinks away", esp. on phones. */
+const SCALE_STEP = 0.025;
+const OPACITY_STEP = 0.03;
 /** Deepest buried card never recedes past MAX_DEPTH steps (stays readable). */
-const MAX_DEPTH = 5;
+const MAX_DEPTH = 3;
 
 const clamp = (v: number, min: number, max: number) =>
   Math.min(max, Math.max(min, v));
