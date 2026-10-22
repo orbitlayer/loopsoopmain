@@ -178,7 +178,7 @@ export function ScrollStack({ items, className }: ScrollStackProps) {
       <ol
         ref={listRef}
         data-enhanced={enhanced ? "true" : undefined}
-        className={cn(styles.stack, "mx-auto w-full max-w-[1100px]")}
+        className={cn(styles.stack, "mx-auto w-full max-w-[520px]")}
       >
         {items.map((item, i) => (
           <li
@@ -189,7 +189,7 @@ export function ScrollStack({ items, className }: ScrollStackProps) {
             style={{ ["--i" as string]: i, zIndex: i + 1 }}
             className={cn(
               styles.card,
-              "relative flex min-h-[clamp(230px,30vh,380px)] flex-col justify-center overflow-hidden rounded-[24px] border border-line bg-white p-7 md:min-h-[clamp(320px,42vh,480px)] md:p-12",
+              "relative flex aspect-square flex-col justify-center overflow-hidden rounded-[24px] border border-line bg-white p-7 md:p-10",
             )}
           >
             {/* Sequence number beside the title (side-wise), description below. */}
