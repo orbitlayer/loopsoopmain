@@ -155,7 +155,8 @@ export default async function HomePage() {
       </section>
 
       {/* ---------------------------------------------------- Process */}
-      <section className="relative overflow-hidden py-14 md:py-20">
+      {/* No overflow-hidden here: it would break the cards' position: sticky. */}
+      <section className="relative py-14 md:py-20">
         <Container className="relative z-10">
           <span className={EYEBROW}>How it works</span>
           <KineticText
